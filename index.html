@@ -1,24 +1,134 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <script src="jquery.js"></script>
+
+    <style type='text/css'>
+      h1 {
+        text-align: center;
+        color: #FEFEFE;
+        font-size: 60px;
+
+      }
+      body {
+        background-color: #4683FE;
+      }
+      button {
+        font-size: 15px;
+        border-radius: 10px
+      }
+      textArea {
+        width: 35%;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+      .refreshTweets {
+        text-align: center;
+        display: none;
+      }
+      .home {
+        text-align: center;
+        display: none;
+      }
+      .tweetMessageBox {
+        border-radius: 1px;
+        margin: 0 auto;
+        margin-top: 15px;
+        width: 40%;
+        background-color: #ffffff;
+      }
+      .tweetMessage {
+        margin: 15px;
+      }
+      .tweetCreated {
+        font-size: 10px;
+      }
+      a {
+        color: #010101;
+      }
+
+    </style>
+
   </head>
   <body>
+    <h1>Twittler</h1>
+
+    <div class='container'>
+
+      <div class='refreshTweets'>
+        <button> Refresh Tweets</button>
+      </div>
+
+      <div class='home'>
+        <button>Home</button>
+      </div>
+
+      <div class='tweets'>
+      </div>
+
+    </div>
+
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+        var $tweets = $('.tweets');
+        var tweetCount = 0;
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+
+        function updateStream() {
+          var index = streams.home.length - 1;
+          var updateCount = tweetCount;
+          tweetCount = index + 1
+          while(updateCount <= index) {
+            var tweet = streams.home[updateCount];
+            var $tweet = $('<div class="tweetMessageBox" style="display:none"></div>');
+
+            $tweet.html('<div class="tweetUser"><a href="#" class="link">@'+tweet.user+'</a></div>'+
+              '<div class="tweetMessage">'+tweet.message+'</div>' +
+              '<div class="tweetCreated">'+tweet.created_at+'</div>' );
+            $tweet.addClass(tweet.user);
+            $tweet.prependTo($tweets).slideDown();
+            updateCount += 1;
+          }
+          $('.refreshTweets').slideUp();
         }
+        updateStream();
+        function refreshStream() {
+          $('.tweetMessageBox').slideUp();
+          $('.tweetMessageBox').slideDown();
+          refreshButton = setInterval(checkTweet, 100);
+        }
+        function checkTweet() {
+          if (streams.home.length - 1 > tweetCount) {
+            $('.refreshTweets').slideDown();
+          }
+        }
+        var refreshButton = setInterval(checkTweet, 100);
+        $('.refreshTweets').on('click', function() {
+          updateStream();
+        })
+        $('.home').on('click', function() {
+          $('.home').slideUp();
+          refreshStream();
+        })
+        $('.tweets').on('click', '.link', function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          clearInterval(refreshButton);
+          $('refreshTweets').slideUp();
+          var user = $(this).closest('.tweetMessageBox').find('a').text().slice(1);
+          $('.tweetMessageBox').slideUp();
+          $('.'+user).slideDown();
+          $('.home').show();
+        })
+        var orig_height = $('textArea').height();
+        $('textArea').focus(function () {
+          $(this).animate({'height': '50px'})
+        })
+        $('textArea').blur(function () {
+          $(this).animate({height: orig_height + 'px'});
+        })
 
       });
 
