@@ -82,16 +82,15 @@
           tweetCount = index + 1
           while(updateCount <= index) {
             var tweet = streams.home[updateCount];
-            var $tweet = $('<div class="tweetMessageBox" style="display:none"></div>');
-
+            var $tweet = $('<div class="tweetMessageBox"></div>');
             $tweet.html('<div class="tweetUser"><a href="#" class="link">@'+tweet.user+'</a></div>'+
               '<div class="tweetMessage">'+tweet.message+'</div>' +
               '<div class="tweetCreated">'+tweet.created_at+'</div>' );
             $tweet.addClass(tweet.user);
-            $tweet.prependTo($tweets).slideDown();
+            $tweet.prependTo($tweets);
             updateCount += 1;
           }
-          $('.refreshTweets').slideUp();
+          $('.refreshTweets');
         }
 
         updateStream();
